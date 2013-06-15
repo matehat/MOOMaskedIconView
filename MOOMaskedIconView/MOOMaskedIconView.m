@@ -528,7 +528,7 @@ NSCache *_defaultMaskCache;
 
 - (void)configureWithImageNamed:(NSString *)imageName size:(CGSize)size;
 {
-    [self _configureWithResourceNamed:imageName size:size page:1 usingBlock:^CGImageRef(NSString *name, CGSize size, NSUInteger page) {
+    [self configureWithResourceNamed:imageName size:size page:1 usingBlock:^CGImageRef(NSString *name, CGSize size, NSUInteger page) {
         return CGImageCreateMaskFromImageNamed(imageName, size);
     }];
 }
@@ -545,7 +545,7 @@ NSCache *_defaultMaskCache;
 
 - (void)configureWithPDFNamed:(NSString *)pdfName size:(CGSize)size page:(NSUInteger)page;
 {
-    [self _configureWithResourceNamed:pdfName size:size page:page usingBlock:^CGImageRef(NSString *name, CGSize size, NSUInteger page) {
+    [self configureWithResourceNamed:pdfName size:size page:page usingBlock:^CGImageRef(NSString *name, CGSize size, NSUInteger page) {
         return CGImageCreateMaskFromPDFNamed(pdfName, size, page);
     }];
 }
@@ -577,15 +577,15 @@ NSCache *_defaultMaskCache;
 
 - (void)configureWithResourceNamed:(NSString *)resourceName size:(CGSize)size page:(NSUInteger)page;
 {
-    [self _configureWithResourceNamed:resourceName size:size page:page usingBlock:^CGImageRef(NSString *name, CGSize size, NSUInteger page) {
+    [self configureWithResourceNamed:resourceName size:size page:page usingBlock:^CGImageRef(NSString *name, CGSize size, NSUInteger page) {
         return CGImageCreateMaskFromResourceNamed(name, size, page);
     }];
 }
 
-- (void)_configureWithResourceNamed:(NSString *)resourceName
-                               size:(CGSize)size
-                               page:(NSUInteger)page
-                         usingBlock:(CGImageRef(^)(NSString *name, CGSize size, NSUInteger page))block {
+- (void)configureWithResourceNamed:(NSString *)resourceName
+                              size:(CGSize)size
+                              page:(NSUInteger)page
+                        usingBlock:(CGImageRef(^)(NSString *name, CGSize size, NSUInteger page))block {
     NSString *key = MOOMaskCacheKeyForResource(resourceName, size, page);
     MOOCGImageWrapper *imageWrapper = [[[self class] defaultMaskCache] objectForKey:key];
     CGImageRef mask;

@@ -289,20 +289,29 @@ typedef enum {
 + (MOOMaskedIconView *)iconWithResourceNamed:(NSString *)resourceName size:(CGSize)size  page:(NSUInteger)page;
 
 /** @name Configuration methods */
+
 - (void)configureWithImage:(UIImage *)image;
 - (void)configureWithImage:(UIImage *)image size:(CGSize)size;
+
 - (void)configureWithImageNamed:(NSString *)imageName;
 - (void)configureWithImageNamed:(NSString *)imageName size:(CGSize)size;
+
 - (void)configureWithPDFNamed:(NSString *)pdfName;
 - (void)configureWithPDFNamed:(NSString *)pdfName size:(CGSize)size;
 - (void)configureWithPDFNamed:(NSString *)pdfName size:(CGSize)size page:(NSUInteger)page;
+
 - (void)configureWithPDFData:(NSData *)pdfData;
 - (void)configureWithPDFData:(NSData *)pdfData size:(CGSize)size;
 - (void)configureWithPDFData:(NSData *)pdfData size:(CGSize)size page:(NSUInteger)page;
+
 - (void)configureWithResourceNamed:(NSString *)resourceName;
 - (void)configureWithResourceNamed:(NSString *)resourceName size:(CGSize)size;
 - (void)configureWithResourceNamed:(NSString *)resourceName size:(CGSize)size page:(NSUInteger)page;
 
+- (void)configureWithResourceNamed:(NSString *)resourceName
+                              size:(CGSize)size
+                              page:(NSUInteger)page
+                        usingBlock:(CGImageRef(^)(NSString *name, CGSize size, NSUInteger page))block;
 
 /** @name Traits */
 
