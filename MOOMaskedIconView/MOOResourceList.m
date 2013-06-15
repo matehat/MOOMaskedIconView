@@ -11,6 +11,10 @@
 #import "MOOCGImageWrapper.h"
 #import "MOOMaskedIconView.h"
 
+NSString * MOOMaskCacheKeyForResource(NSString *name, CGSize size, NSUInteger pageNumber) {
+    return [NSString stringWithFormat:@"%@:%d:%@", name, pageNumber, NSStringFromCGSize(size)];
+}
+
 // Queues
 static dispatch_queue_t _defaultRenderQueue;
 
@@ -82,10 +86,10 @@ static MOOResourceRegistry *_sharedRegistry;
         for (NSString *resourceName in self.names)
             dispatch_async([MOOResourceList defaultRenderQueue], ^{
                 NSCache *maskCache = [MOOMaskedIconView defaultMaskCache];
-                NSString *key = [resourceName stringByAppendingString:NSStringFromCGSize(CGSizeZero)];
+                NSString *key = MOOMaskCacheKeyForResource(resourceName, CGSizeZero, 1);
                 if (![maskCache objectForKey:key])
                 {
-                    CGImageRef mask = CGImageCreateMaskFromResourceNamed(resourceName, CGSizeZero);
+                    CGImageRef mask = CGImageCreateMaskFromResourceNamed(resourceName, CGSizeZero, 1);
                     MOOCGImageWrapper *imageWrapper = [MOOCGImageWrapper wrapperWithCGImage:mask];
                     CGImageRelease(mask);
                     
@@ -101,11 +105,16 @@ static MOOResourceRegistry *_sharedRegistry;
 
 - (NSArray *)keys;
 {
-    NSMutableArray *keys = [NSMutableArray arrayWithCapacity:[self.names count]];
-    
-    for (NSString *name in self.names)
-        [keys addObject:[name stringByAppendingString:NSStringFromCGSize(CGSizeZero)]];
-        
+    static NSArray *keys;
+    @synchronized(_names) {
+        if (!keys) {
+            keys = [NSMutableArray arrayWithCapacity:[self.names count]];
+            for (NSString *name in self.names)
+                [(NSMutableArray *)keys addObject:MOOMaskCacheKeyForResource(name, CGSizeZero, 1)];
+            
+            keys = [NSArray arrayWithArray:keys];
+        }
+    }
     return keys;
 }
 
@@ -132,12 +141,12 @@ static MOOResourceRegistry *_sharedRegistry;
 
 @interface MOOResourceRegistry ()
 
-@property (nonatomic, strong) NSArray *resourceLists;
+@property (nonatomic, strong) NSArray *resourceProviders;
 
 @end
 
 @implementation MOOResourceRegistry
-@synthesize resourceLists = _resourceLists;
+@synthesize resourceProviders = _resourceProviders;
 
 - (id)init;
 {
@@ -145,30 +154,30 @@ static MOOResourceRegistry *_sharedRegistry;
         return nil;
 
     // Initialize resource lists
-    self.resourceLists = [NSArray array];
+    self.resourceProviders = [NSArray array];
 
     return self;
 }
 
 - (void)dealloc;
 {
-    self.resourceLists = nil;
+    self.resourceProviders = nil;
 
     AH_SUPER_DEALLOC;
 }
 
 #pragma mark - List marshalling
 
-- (void)registerList:(MOOResourceList *)resourceList;
+- (void)registerProvider:(NSObject <MOOResourceProvider> *)provider;
 {
-    if (![self.resourceLists containsObject:resourceList])
-        self.resourceLists = [self.resourceLists arrayByAddingObject:resourceList];
+    if (![self.resourceProviders containsObject:provider])
+        self.resourceProviders = [self.resourceProviders arrayByAddingObject:provider];
 }
 
-- (void)deregisterList:(MOOResourceList *)resourceList;
+- (void)deregisterProvider:(NSObject <MOOResourceProvider> *)provider;
 {
-    self.resourceLists = [self.resourceLists filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
-        return evaluatedObject != resourceList;
+    self.resourceProviders = [self.resourceProviders filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
+        return evaluatedObject != provider;
     }]];
 }
 
@@ -176,7 +185,7 @@ static MOOResourceRegistry *_sharedRegistry;
 
 - (BOOL)shouldCacheResourceWithKey:(NSString *)key;
 {
-    for (MOOResourceList *list in self.resourceLists)
+    for (NSObject <MOOResourceProvider> *list in self.resourceProviders)
         for (NSString *keyToCache in list.keys)
             if ([keyToCache isEqualToString:key])
                 return YES;

@@ -14,7 +14,6 @@ Pod::Spec.new do |s|
                   'MOOMaskedIconView displays common image formats and PDFs.'
   s.platform = :ios
   s.source_files = 'MOOMaskedIconView'
-  s.clean_paths = "Demo Project", "Editor Support"
   s.frameworks = 'QuartzCore', 'Accelerate'
-  s.requires_arc = false
+  s.requires_arc = true
 end

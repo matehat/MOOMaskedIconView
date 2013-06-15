@@ -9,13 +9,25 @@
 #import <UIKit/UIKit.h>
 
 /**
+ 
+ */
+
+NSString * MOOMaskCacheKeyForResource(NSString *name, CGSize size, NSUInteger pageNumber);
+
+@protocol MOOResourceProvider <NSObject>
+
+@property (readonly) NSArray *keys;
+
+@end
+
+/**
  MOOResourceList lists resources which should be cached and provides background rendering of itself.
  
  Resource lists should be placed inside the shared resource registry.
  
  @see MOOResourceRegistry
  */
-@interface MOOResourceList : NSObject
+@interface MOOResourceList : NSObject <MOOResourceProvider>
 {
     NSArray *_names;
 }
@@ -80,7 +92,7 @@
  */
 @interface MOOResourceRegistry : NSObject
 {
-    NSArray *_resourceLists;
+    NSArray *_resourceProviders;
 }
 
 /**
@@ -89,22 +101,22 @@
 @property (nonatomic, strong, readonly) NSArray *resourceLists;
 
 /**
- Registers a resource list for querying by MOOMaskedIconView instances
+ Registers a resource provider for querying by MOOMaskedIconView instances
  
  @param resourceList    The resource list to register
  
  @see deregisterList:
  */
-- (void)registerList:(MOOResourceList *)resourceList;
+- (void)registerProvider:(NSObject <MOOResourceProvider> *)provider;
 
 /**
- Deregisters a resource list from querying by MOOMaskedIconView instances
+ Deregisters a resource provider from querying by MOOMaskedIconView instances
  
  @param resourceList    The resource list to deregister
  
  @see registerList:
  */
-- (void)deregisterList:(MOOResourceList *)resourceList;
+- (void)deregisterProvider:(NSObject <MOOResourceProvider> *)provider;
 
 /**
  Iterates through the resource list and returns whether the resource with key `key` should be cached.

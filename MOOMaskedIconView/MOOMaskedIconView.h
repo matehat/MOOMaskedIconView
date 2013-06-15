@@ -265,10 +265,13 @@ typedef enum {
 - (id)initWithImageNamed:(NSString *)imageName size:(CGSize)size;
 - (id)initWithPDFNamed:(NSString *)pdfName;
 - (id)initWithPDFNamed:(NSString *)pdfName size:(CGSize)size;
+- (id)initWithPDFNamed:(NSString *)pdfName size:(CGSize)size page:(NSUInteger)page;
 - (id)initWithPDFData:(NSData *)pdfData;
 - (id)initWithPDFData:(NSData *)pdfData size:(CGSize)size;
+- (id)initWithPDFData:(NSData *)pdfData size:(CGSize)size page:(NSUInteger)page;
 - (id)initWithResourceNamed:(NSString *)resourceName;
 - (id)initWithResourceNamed:(NSString *)resourceName size:(CGSize)size;
+- (id)initWithResourceNamed:(NSString *)resourceName size:(CGSize)size page:(NSUInteger)page;
 
 /** @name Creation methods */
 + (MOOMaskedIconView *)iconWithImage:(UIImage *)image;
@@ -277,10 +280,13 @@ typedef enum {
 + (MOOMaskedIconView *)iconWithImageNamed:(NSString *)imageName size:(CGSize)size;
 + (MOOMaskedIconView *)iconWithPDFNamed:(NSString *)pdfName;
 + (MOOMaskedIconView *)iconWithPDFNamed:(NSString *)pdfName size:(CGSize)size;
++ (MOOMaskedIconView *)iconWithPDFNamed:(NSString *)pdfName size:(CGSize)size page:(NSUInteger)page;
 + (MOOMaskedIconView *)iconWithPDFData:(NSData *)pdfData;
 + (MOOMaskedIconView *)iconWithPDFData:(NSData *)pdfData size:(CGSize)size;
++ (MOOMaskedIconView *)iconWithPDFData:(NSData *)pdfData size:(CGSize)size page:(NSUInteger)page;
 + (MOOMaskedIconView *)iconWithResourceNamed:(NSString *)resourceName;
 + (MOOMaskedIconView *)iconWithResourceNamed:(NSString *)resourceName size:(CGSize)size;
++ (MOOMaskedIconView *)iconWithResourceNamed:(NSString *)resourceName size:(CGSize)size  page:(NSUInteger)page;
 
 /** @name Configuration methods */
 - (void)configureWithImage:(UIImage *)image;
@@ -289,10 +295,13 @@ typedef enum {
 - (void)configureWithImageNamed:(NSString *)imageName size:(CGSize)size;
 - (void)configureWithPDFNamed:(NSString *)pdfName;
 - (void)configureWithPDFNamed:(NSString *)pdfName size:(CGSize)size;
+- (void)configureWithPDFNamed:(NSString *)pdfName size:(CGSize)size page:(NSUInteger)page;
 - (void)configureWithPDFData:(NSData *)pdfData;
 - (void)configureWithPDFData:(NSData *)pdfData size:(CGSize)size;
+- (void)configureWithPDFData:(NSData *)pdfData size:(CGSize)size page:(NSUInteger)page;
 - (void)configureWithResourceNamed:(NSString *)resourceName;
 - (void)configureWithResourceNamed:(NSString *)resourceName size:(CGSize)size;
+- (void)configureWithResourceNamed:(NSString *)resourceName size:(CGSize)size page:(NSUInteger)page;
 
 
 /** @name Traits */
@@ -358,12 +367,12 @@ CGImageRef CGImageCreateMaskFromImageNamed(NSString *imageName, CGSize size);
 /**
  * Create a mask CGImage from a given pdf name for a given size.
  */
-CGImageRef CGImageCreateMaskFromPDFNamed(NSString *pdfName, CGSize size);
+CGImageRef CGImageCreateMaskFromPDFNamed(NSString *pdfName, CGSize size, size_t pageNumber);
 
 /**
  * Create a mask CGImage from a given pdf data for a given size.
  */
-CGImageRef CGImageCreateMaskFromPDFData(NSData *pdfData, CGSize size);
+CGImageRef CGImageCreateMaskFromPDFData(NSData *pdfData, CGSize size, size_t pageNumber);
 
 /**
  * Create a mask CGImage from a given pdf page for a given size.
@@ -373,4 +382,4 @@ CGImageRef CGImageCreateMaskFromPDFPage(CGPDFPageRef page, CGSize size);
 /**
  * Create a mask CGImage from a given resource name for a given size
  */
-CGImageRef CGImageCreateMaskFromResourceNamed(NSString *resourceName, CGSize size);
+CGImageRef CGImageCreateMaskFromResourceNamed(NSString *resourceName, CGSize size, size_t pageNumber);

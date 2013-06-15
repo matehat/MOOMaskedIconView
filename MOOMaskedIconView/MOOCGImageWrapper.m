@@ -9,7 +9,10 @@
 
 #import "AHHelper.h"
 
-@implementation MOOCGImageWrapper
+@implementation MOOCGImageWrapper {
+    NSUInteger accessCounter;
+}
+
 @dynamic CGImage;
 @dynamic cost;
 
@@ -18,6 +21,7 @@
     if (!(self = [super init]))
         return nil;
     
+    accessCounter = 1;
     self.CGImage = image;
 
     return self;
@@ -62,6 +66,23 @@
 - (NSUInteger)cost;
 {
     return CGImageGetBytesPerRow(self.CGImage) * CGImageGetHeight(self.CGImage);
+}
+
+- (BOOL)beginContentAccess {
+    accessCounter++;
+}
+- (void)endContentAccess {
+    if (accessCounter > 0)
+        accessCounter--;
+}
+- (BOOL)isContentDiscarded {
+    return _CGImage == NULL;
+}
+- (void)discardContentIfPossible {
+    if (accessCounter == 0) {
+        CGImageRelease(_CGImage);
+        _CGImage = NULL;
+    }
 }
 
 @end

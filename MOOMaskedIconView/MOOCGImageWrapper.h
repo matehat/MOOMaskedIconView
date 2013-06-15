@@ -12,7 +12,7 @@
 #import <ApplicationServices/ApplicationServices.h>
 #endif
 
-@interface MOOCGImageWrapper : NSObject
+@interface MOOCGImageWrapper : NSObject <NSDiscardableContent>
 {
     CGImageRef _CGImage;
 }
